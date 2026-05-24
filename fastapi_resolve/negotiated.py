@@ -1,14 +1,13 @@
 from typing import Callable
 
 from fastapi import HTTPException, Request
-from starlette.responses import Response
 
 from ._logging import get_logger
 
 logger = get_logger("negotiated")
 
 
-class Negotiated(Response):
+class Negotiated:
     @staticmethod
     def split_content_type(content_type: str) -> tuple[str, str]:
         r = content_type.split("/")
