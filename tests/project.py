@@ -9,6 +9,7 @@ class Project(Deferred):
     router = Router()
 
     def __init__(self, project: str):
+        super().__init__()
         self.project = project
 
     @router.get("dashboard")
