@@ -4,6 +4,8 @@ from uuid import UUID
 
 from .route_context import RouteContext
 
+RESERVED_PARAM_NAMES = {"request", "response", "self", "deferred", "payload"}
+
 
 class Route:
     """
@@ -13,6 +15,13 @@ class Route:
 
     def __init__(self, path: str, handler: Callable, methods: list[str] = []) -> None:
         self.sections: list[str] = path.strip("/").split("/")
+        for pattern in self.sections:
+            if ":" in pattern:
+                _, param_name = pattern.split(":", 1)
+                if param_name in RESERVED_PARAM_NAMES:
+                    raise ValueError(
+                        f"'{param_name}' is reserved and cannot be used for a path parameter."
+                    )
         self.handler: Callable = handler
         self.methods: list[str] = methods
 

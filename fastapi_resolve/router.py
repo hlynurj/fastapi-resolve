@@ -215,7 +215,7 @@ class Router:
                 remaining,
             )
             returned = await Router._dispatch_request(
-                remaining, request, response, returned.routers(), returned
+                remaining, request, response, returned.routers, returned
             )
         if isinstance(returned, Negotiated):
             logger.debug(

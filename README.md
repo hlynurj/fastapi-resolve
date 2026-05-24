@@ -51,6 +51,8 @@ def get_user(id: int):
     return {"id": id}
 ```
 
+Note that the words `request`, `response`, `self`, `deferred` and `payload` are reserved and cannot be used for path parameters.
+
 ### Wildcards
 
 A `*` at the end of a pattern matches any remaining path. This is mainly used with `Deferred` prefix handlers:
