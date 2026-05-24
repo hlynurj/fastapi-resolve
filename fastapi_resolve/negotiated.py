@@ -3,19 +3,27 @@ from typing import Callable
 from fastapi import HTTPException, Request
 from starlette.responses import Response
 
+from ._logging import get_logger
+
+logger = get_logger("negotiated")
+
 
 class Negotiated(Response):
     @staticmethod
     def split_content_type(content_type: str) -> tuple[str, str]:
         r = content_type.split("/")
         if len(r) != 2:
-            raise AttributeError("Content type must be in the format of 'mediatype/subtype'")
+            raise AttributeError(
+                "Content type must be in the format of 'mediatype/subtype'"
+            )
         return (r[0], r[1])
-        
+
     def __init__(self, handlers: dict[str, Callable]) -> None:
         super().__init__()
-        self.handlers: list[tuple[tuple[str, str], Callable]] = [(self.split_content_type(k), v) for k, v in handlers.items()]
-        
+        self.handlers: list[tuple[tuple[str, str], Callable]] = [
+            (self.split_content_type(k), v) for k, v in handlers.items()
+        ]
+
     class Directive:
         def __init__(self, s: str) -> None:
             if not s.strip():
@@ -37,7 +45,7 @@ class Negotiated(Response):
                     pass
             if self.qualifier < 0 or self.qualifier > 1:
                 raise ValueError
-        
+
         def matches(self, content_type: tuple[str, str]) -> bool:
             if self.media_type == "*":
                 return True
@@ -45,7 +53,7 @@ class Negotiated(Response):
             if self.media_type != media_type:
                 return False
             return self.sub_type == "*" or self.sub_type == sub_type
-    
+
     def resolve(self, request: Request):
         accept = request.headers.get("accept", "").split(",")
         directives: list[Negotiated.Directive] = []
@@ -56,12 +64,18 @@ class Negotiated(Response):
                 pass
         if len(directives) == 0:
             directives.append(self.Directive("*/*"))
-            
+
         directives.sort(key=lambda d: d.qualifier, reverse=True)
-        
+
         for directive in directives:
-            for (key, handler) in self.handlers:
+            for key, handler in self.handlers:
                 if directive.matches(key):
+                    logger.debug(
+                        "Negotiated resolved against '%s' to %s/%s",
+                        request.headers.get("accept", "*/*"),
+                        directive.media_type,
+                        directive.sub_type,
+                    )
                     return handler()
-        
+
         raise HTTPException(status_code=406)

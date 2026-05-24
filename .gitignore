@@ -10,3 +10,4 @@ local.env
 dist/
 build/
 .vscode/
+todo.md
