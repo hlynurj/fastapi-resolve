@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fastapi-resolve"
-version = "1.0.0"
+version = "1.0.1"
 description = "Deferred routing and content negotiation for FastAPI"
 requires-python = ">=3.12"
+readme = "README.md"
 dependencies = [
     "fastapi>=0.100",
 ]
