@@ -107,7 +107,6 @@ class TenantEndpoints(Deferred):
     router = Router()
 
     def __init__(self, tenant):
-        super().__init__()
         self.tenant = tenant
 
     @router.get("")
@@ -151,27 +150,6 @@ This handles:
 | `GET /acme/unknown`   | `unknown`     | 404            |
 | `GET /nonexistent`    | —             | Falls through  |
 
-### Dynamic Routing
-
-A deferred handler can set up routers dynamically in `__init__`:
-
-```python
-from contents.normal_project import router as normal_project_router
-from contents.extended_project import router as extended_project_router
-
-class ProjectBranch(Deferred):
-    def __init__(self, project: Project):
-        super().__init__()
-        self.project = project
-        if project.type == "EXTENDED":
-            self.routers.append(extended_project_router)
-        else:
-            self.routers.append(normal_project_router)
-    
-    def context(self):
-        return self.project
-```
-
 ### Nested Deferred
 
 A deferred handler can itself return another `Deferred`, creating nested scopes. Here a tenant branch resolves a project within its scope and returns a `ProjectBranch` whose `context()` exposes the `Project` domain object:
@@ -181,7 +159,6 @@ class ProjectBranch(Deferred):
     router = Router()
 
     def __init__(self, project: Project):
-        super().__init__()
         self.project = project
 
     def context(self):
@@ -200,7 +177,6 @@ class TenantBranch(Deferred):
     router = Router()
 
     def __init__(self, tenant):
-        super().__init__()
         self.tenant = tenant
 
     @router.get("")
@@ -263,7 +239,6 @@ class ProjectBranch(Deferred):
     articles = article_router
 
     def __init__(self, project: Project):
-        super().__init__()
         self.project = project
 
     def context(self):
